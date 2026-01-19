@@ -11,6 +11,7 @@ namespace MyFirstApi.Data
         {
         }
         // อยากได้ตารางอะไร ต้องประกาศเองตรงนี้
-        public DbSet<User> Users { get; set; } // ตัวอย่างสร้างตาราง Users เอง
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
 }
 }

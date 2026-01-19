@@ -14,7 +14,9 @@ namespace MyFirstApi.Models
         
         [Required]
         public string Email { get; set; } = string.Empty;
-        
-        public string Role { get; set; } = "Member";
+
+        // Foreign Key
+        public int RoleId { get; set; }
+        public Role? Role { get; set; }
     }
 }
