@@ -272,3 +272,4 @@
 /Users/tanapat.yenicloud.com/MyFirstApi/backend/obj/Debug/net10.0/MyFirstApi.pdb
 /Users/tanapat.yenicloud.com/MyFirstApi/backend/obj/Debug/net10.0/MyFirstApi.genruntimeconfig.cache
 /Users/tanapat.yenicloud.com/MyFirstApi/backend/obj/Debug/net10.0/ref/MyFirstApi.dll
+/Users/tanapat.yenicloud.com/MyFirstApi/backend/obj/Debug/net10.0/MyFirstApi.sourcelink.json

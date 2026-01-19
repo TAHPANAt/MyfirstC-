@@ -37,27 +37,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // ==================================================================
 // 2. IDENTITY (SECURITY & STRICT POLICIES) 🔒
 // ==================================================================
-
-builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-{
-    // --- Password Policy (รหัสผ่านต้องยาก) ---
-    options.Password.RequiredLength = 12; // ยาวขั้นต่ำ 12 ตัว
-    options.Password.RequireDigit = true; // ต้องมีตัวเลข
-    options.Password.RequireLowercase = true; // ต้องมีตัวเล็ก
-    options.Password.RequireUppercase = true; // ต้องมีตัวใหญ่
-    options.Password.RequireNonAlphanumeric = true; // ต้องมีอักขระพิเศษ (!@#$%)
-
-    // --- Lockout Policy (ป้องกัน Brute Force) ---
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15); // ล็อกนาน 15 นาที
-    options.Lockout.MaxFailedAccessAttempts = 5; // ผิดได้แค่ 5 ครั้ง
-    options.Lockout.AllowedForNewUsers = true;
-
-    // --- User Policy ---
-    options.User.RequireUniqueEmail = true; // อีเมลห้ามซ้ำ
-})
-.AddEntityFrameworkStores<AppDbContext>()
-.AddDefaultTokenProviders();
-
+// DISABLED: User chose to manage tables manually.
+// builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+// {
+//     // ...
+// })
+// .AddEntityFrameworkStores<AppDbContext>()
+// .AddDefaultTokenProviders();
 // ==================================================================
 // 3. JWT AUTHENTICATION 🔑
 // ==================================================================
