@@ -2943,24 +2943,32 @@
     ]
   },
   "packageFolders": {
-    "/Users/tanapat.yenicloud.com/.nuget/packages/": {}
+    "C:\\Users\\tanap\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/tanapat.yenicloud.com/MyFirstApi/backend/MyFirstApi.csproj",
+      "projectUniqueName": "C:\\Users\\tanap\\MyfirstC-\\backend\\MyFirstApi.csproj",
       "projectName": "MyFirstApi",
-      "projectPath": "/Users/tanapat.yenicloud.com/MyFirstApi/backend/MyFirstApi.csproj",
-      "packagesPath": "/Users/tanapat.yenicloud.com/.nuget/packages/",
-      "outputPath": "/Users/tanapat.yenicloud.com/MyFirstApi/backend/obj/",
+      "projectPath": "C:\\Users\\tanap\\MyfirstC-\\backend\\MyFirstApi.csproj",
+      "packagesPath": "C:\\Users\\tanap\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\tanap\\MyfirstC-\\backend\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "/Users/tanapat.yenicloud.com/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\tanap\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -3031,7 +3039,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.102/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.AspNetCore": "(,10.0.32767]",
           "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

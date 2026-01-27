@@ -13,5 +13,7 @@ namespace MyFirstApi.Data
         // อยากได้ตารางอะไร ต้องประกาศเองตรงนี้
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-}
+        public DbSet<Item> Items { get; set; }
+        public DbSet<Category> Categories { get; set; }
+    }
 }

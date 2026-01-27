@@ -24,7 +24,7 @@ var connectionString =
     $"Port={GetEnv("PG_PORT", "5432")};" +
     $"Database={GetEnv("PG_DB", "Shop_test")};" +
     $"Username={GetEnv("PG_USER", "postgres")};" +
-    $"Password={GetEnv("PG_PASSWORD", "postgres")};" +
+    $"Password={GetEnv("PG_PASSWORD", "1234")};" +
     $"Include Error Detail=true;"; // ช่วยให้เห็น Error ชัดขึ้นตอน Dev
 
 // แก้ปัญหาเรื่อง DateTime ของ PostgreSQL (Legacy Timestamp)
