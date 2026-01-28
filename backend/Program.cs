@@ -77,6 +77,18 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+// CORS Configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 // ตั้งค่า Swagger ให้มีปุ่ม "Authorize" (รูปกุญแจ)
 builder.Services.AddSwaggerGen(options =>
 {
@@ -123,6 +135,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
 
 // *** ลำดับสำคัญมาก ห้ามสลับ ***
 app.UseAuthentication(); // 1. ตรวจบัตร (Who are you?)

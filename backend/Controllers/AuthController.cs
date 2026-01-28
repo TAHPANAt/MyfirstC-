@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MyFirstApi.Data;
 using MyFirstApi.DTOs;
 using MyFirstApi.Models;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,16 +14,12 @@ namespace MyFirstApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
+        private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
 
-        public AuthController(UserManager<AppUser> userManager, 
-                              SignInManager<AppUser> signInManager,
-                              IConfiguration configuration)
+        public AuthController(AppDbContext context, IConfiguration configuration)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _context = context;
             _configuration = configuration;
         }
 
@@ -31,64 +28,66 @@ namespace MyFirstApi.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var user = new AppUser 
-            { 
-                UserName = model.Username, 
-                Email = model.Email,
-                FullName = model.FullName
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (result.Succeeded)
+            // Check if user exists
+            if (await _context.Users.AnyAsync(u => u.Gmail == model.Gmail))
             {
-                return Ok(new { message = "Registration successful" });
+                return BadRequest("User with this email already exists.");
             }
 
-            return BadRequest(result.Errors);
+            // Assign a default role (e.g., 1 for User, assuming Role 1 exists)
+            // If Roles table is empty, you might need to handle that.
+            var defaultRole = await _context.Roles.FirstOrDefaultAsync();
+            int roleId = defaultRole?.Id ?? 1; 
+
+            var user = new User
+            {
+                Firstname = model.Firstname,
+                Lastname = model.Lastname,
+                Gmail = model.Gmail,
+                Phone = model.Phone,
+                Password = model.Password, // In production, hash this!
+                RoleId = roleId
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Registration successful" });
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
-            var user = await _userManager.FindByNameAsync(model.Username);
-            if (user == null) return Unauthorized("Invalid username or password");
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Gmail == model.Gmail && u.Password == model.Password);
 
-            // lockoutOnFailure: true คือหัวใจสำคัญของการป้องกัน Brute Force
-            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
+            if (user == null) return Unauthorized("Invalid email or password");
 
-            if (result.Succeeded)
-            {
-                return Ok(new { token = GenerateJwtToken(user) });
-            }
-
-            if (result.IsLockedOut)
-            {
-                return StatusCode(423, "Account is locked due to multiple failed attempts. Please try again later.");
-            }
-
-            return Unauthorized("Invalid login attempt");
+            return Ok(new { token = GenerateJwtToken(user), user = new { name = user.Firstname, role = user.Role?.Name } });
         }
 
-        private string GenerateJwtToken(AppUser user)
+        private string GenerateJwtToken(User user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
-            var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
+            var keyStr = Environment.GetEnvironmentVariable("JWT_SECRET") ?? "THIS_IS_A_VERY_LONG_SECRET_KEY_AT_LEAST_32_CHARS";
+            var key = Encoding.ASCII.GetBytes(keyStr);
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Gmail),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Name, user.UserName ?? "")
+                new Claim(ClaimTypes.Name, $"{user.Firstname} {user.Lastname}"),
+                new Claim(ClaimTypes.Role, user.Role?.Name ?? "User")
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(30), // Token อายุ 30 นาที
-                Issuer = jwtSettings["Issuer"],
-                Audience = jwtSettings["Audience"],
+                Expires = DateTime.UtcNow.AddMinutes(30),
+                // Issuer = jwtSettings["Issuer"], // Optional if not set in appsettings
+                // Audience = jwtSettings["Audience"], // Optional
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

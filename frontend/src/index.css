@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --brand-green: #3fb262;
+  --brand-orange: #ff9800;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  @apply bg-white text-slate-900;
+}
+
+@layer utilities {
+  .brand-gradient {
+    @apply bg-gradient-to-r from-green-500 to-emerald-500;
+  }
+}
+
+@layer components {
+  .page-transition-container {
+    animation: theme('animation.page-fade');
+  }
+
+  #nprogress {
+    @apply pointer-events-none;
+  }
+
+  #nprogress .bar {
+    @apply fixed z-[9999] top-0 left-0 w-full h-1;
+    background: linear-gradient(to right, #3b82f6, #6366f1, #10b981);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+  }
+
+  #nprogress .peg {
+    @apply block absolute right-0 w-[100px] h-full opacity-100;
+    box-shadow: 0 0 15px #3b82f6, 0 0 8px #10b981;
+    transform: rotate(3deg) translate(0px, -4px);
+  }
+}
+
+/* NProgress .spinner remains outside @layer components as it doesn't use @apply */
+#nprogress .spinner {
+  display: block;
+  position: fixed;
+  z-index: 1031;
+  top: 15px;
+  right: 15px;
+}
