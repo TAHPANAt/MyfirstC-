@@ -21,14 +21,5 @@ namespace MyFirstApi.Controllers
         {
             return await _context.Categories.ToListAsync();
         }
-
-        [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category category)
-        {
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCategories", new { id = category.Id }, category);
-        }
     }
 }
