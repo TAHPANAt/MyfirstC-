@@ -11,4 +11,5 @@ import { Navbar } from './components/navbar/navbar';
 })
 export class App {
   protected readonly title = signal('admin-dashboard');
+  protected readonly currentYear = new Date().getFullYear();
 }

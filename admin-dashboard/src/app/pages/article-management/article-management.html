@@ -1,0 +1,112 @@
+<div class="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm dark:bg-slate-900 dark:border-slate-800">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Article Management</h3>
+        <button (click)="toggleModal(false)"
+            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+            Add New Article
+        </button>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-500 dark:text-slate-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-slate-800 dark:text-slate-400">
+                <tr>
+                    <th class="px-6 py-4">Thumbnail</th>
+                    <th class="px-6 py-4">Title</th>
+                    <th class="px-6 py-4">Created At</th>
+                    <th class="px-6 py-4 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-slate-800">
+                @for (article of articles(); track article.id) {
+                <tr class="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td class="px-6 py-4">
+                        <img [src]="article.thumbnail || 'https://via.placeholder.com/150'"
+                            class="w-16 h-10 object-cover rounded-md border border-gray-200 dark:border-slate-700"
+                            alt="thumbnail">
+                    </td>
+                    <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white">{{ article.title }}</td>
+                    <td class="px-6 py-4 text-xs">{{ article.createdAt | date:'short' }}</td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex justify-end gap-3">
+                            <button (click)="toggleModal(true, article)"
+                                class="text-blue-600 hover:text-blue-800 dark:hover:text-blue-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                    </path>
+                                </svg>
+                            </button>
+                            <button (click)="deleteArticle(article.id)" class="text-rose-600 hover:text-rose-800">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                } @empty {
+                <tr>
+                    <td colspan="4" class="px-6 py-12 text-center">No articles found.</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+@if (isModalOpen()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div
+        class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-800">
+        <div class="p-6 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+                {{ isEditMode() ? 'Edit Article' : 'Add New Article' }}
+            </h3>
+            <button (click)="toggleModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        <form [formGroup]="articleForm" (ngSubmit)="onSubmit()" class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Title</label>
+                <input type="text" formControlName="title"
+                    class="w-full px-4 py-2 bg-gray-50 border border-gray-200 dark:bg-slate-800 dark:border-slate-700 rounded-lg outline-none dark:text-white text-sm"
+                    placeholder="Enter article title">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Thumbnail URL</label>
+                <input type="text" formControlName="thumbnail"
+                    class="w-full px-4 py-2 bg-gray-50 border border-gray-200 dark:bg-slate-800 dark:border-slate-700 rounded-lg outline-none dark:text-white text-sm"
+                    placeholder="https://example.com/image.jpg">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Content</label>
+                <textarea formControlName="content" rows="8"
+                    class="w-full px-4 py-2 bg-gray-50 border border-gray-200 dark:bg-slate-800 dark:border-slate-700 rounded-lg outline-none dark:text-white text-sm"
+                    placeholder="Write your article content here..."></textarea>
+            </div>
+
+            <div class="pt-4 flex gap-3">
+                <button type="button" (click)="toggleModal()"
+                    class="flex-1 py-2.5 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-all">
+                    Cancel
+                </button>
+                <button type="submit" [disabled]="articleForm.invalid"
+                    class="flex-1 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-all shadow-lg shadow-blue-500/20">
+                    {{ isEditMode() ? 'Update' : 'Publish' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+}

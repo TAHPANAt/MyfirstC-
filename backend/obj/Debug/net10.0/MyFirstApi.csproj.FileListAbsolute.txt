@@ -415,3 +415,5 @@ C:\Users\tanap\MyfirstC-\backend\obj\Debug\net10.0\refint\MyFirstApi.dll
 C:\Users\tanap\MyfirstC-\backend\obj\Debug\net10.0\MyFirstApi.pdb
 C:\Users\tanap\MyfirstC-\backend\obj\Debug\net10.0\MyFirstApi.genruntimeconfig.cache
 C:\Users\tanap\MyfirstC-\backend\obj\Debug\net10.0\ref\MyFirstApi.dll
+C:\Users\tanap\MyfirstC-\backend\bin\Debug\net10.0\BCrypt.Net-Next.dll
+C:\Users\tanap\MyfirstC-\backend\bin\Debug\net10.0\MyFirstApi.staticwebassets.runtime.json

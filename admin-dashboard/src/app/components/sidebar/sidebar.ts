@@ -8,5 +8,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './sidebar.css',
 })
 export class Sidebar {
-
+  onLogout(): void {
+    localStorage.removeItem('token');
+    window.location.href = 'http://localhost:5173/login';
+  }
 }

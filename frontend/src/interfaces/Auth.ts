@@ -17,5 +17,7 @@ export interface AuthResponse {
         firstname: string;
         lastname: string;
         gmail: string;
+        name?: string;
+        role?: string;
     };
 }

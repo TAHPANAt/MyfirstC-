@@ -15,5 +15,8 @@ namespace MyFirstApi.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Article> Articles { get; set; }
+        public DbSet<ProductOrder> ProductOrders { get; set; }
+        public DbSet<ItemImage> ItemImages { get; set; }
     }
 }

@@ -74,7 +74,11 @@ builder.Services.AddAuthentication(options =>
 // 4. SWAGGER & CONTROLLERS 🛠️
 // ==================================================================
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddEndpointsApiExplorer();
 
 // CORS Configuration
@@ -164,8 +168,8 @@ using (var scope = app.Services.CreateScope())
             var userRole = context.Roles.FirstOrDefault(r => r.Name == "User");
             
             context.Users.AddRange(
-                new User { Firstname = "Admin", Lastname = "System", Gmail = "admin@shop.com", Phone = "081-111-2222", Password = "password123", RoleId = adminRole?.Id ?? 1 },
-                new User { Firstname = "John", Lastname = "Doe", Gmail = "john@example.com", Phone = "082-333-4444", Password = "password123", RoleId = userRole?.Id ?? 2 }
+                new User { Firstname = "Admin", Lastname = "System", Gmail = "admin@shop.com", Phone = "081-111-2222", Password = BCrypt.Net.BCrypt.HashPassword("password123"), RoleId = adminRole?.Id ?? 1 },
+                new User { Firstname = "John", Lastname = "Doe", Gmail = "john@example.com", Phone = "082-333-4444", Password = BCrypt.Net.BCrypt.HashPassword("password123"), RoleId = userRole?.Id ?? 2 }
             );
             context.SaveChanges();
             Console.WriteLine(">>> DB: Users seeded successfully.");
@@ -178,9 +182,9 @@ using (var scope = app.Services.CreateScope())
             var clothing = context.Categories.FirstOrDefault(c => c.Name == "Clothing");
 
             context.Items.AddRange(
-                new Item { Itemname = "iPhone 15 Pro", Description = "Titanium design, A17 Pro chip", Price = 999.00m, CategoryId = electronics?.Id ?? 1 },
-                new Item { Itemname = "MacBook Air M2", Description = "Supercharged by M2 chip", Price = 1199.00m, CategoryId = electronics?.Id ?? 1 },
-                new Item { Itemname = "Graphic T-Shirt", Description = "100% Cotton, comfortable", Price = 25.00m, CategoryId = clothing?.Id ?? 2 }
+                new Item { Itemname = "iPhone 15 Pro", Description = "Titanium design, A17 Pro chip", Price = 999.00m, Stock = 50, CategoryId = electronics?.Id ?? 1 },
+                new Item { Itemname = "MacBook Air M2", Description = "Supercharged by M2 chip", Price = 1199.00m, Stock = 30, CategoryId = electronics?.Id ?? 1 },
+                new Item { Itemname = "Graphic T-Shirt", Description = "100% Cotton, comfortable", Price = 25.00m, Stock = 100, CategoryId = clothing?.Id ?? 2 }
             );
             context.SaveChanges();
             Console.WriteLine(">>> DB: Items seeded successfully.");
@@ -212,6 +216,8 @@ if (app.Environment.IsDevelopment())
 // app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
+
+app.UseStaticFiles(); // Enable serving static files from wwwroot
 
 // *** ลำดับสำคัญมาก ห้ามสลับ ***
 app.UseAuthentication(); // 1. ตรวจบัตร (Who are you?)

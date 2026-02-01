@@ -1,8 +1,21 @@
-<app-navbar></app-navbar>
-<app-sidebar></app-sidebar>
+<div class="flex min-h-screen bg-[#f5f5f5] font-sans">
+  <!-- Sider -->
+  <app-sidebar class="hidden sm:block"></app-sidebar>
 
-<main class="p-4 sm:ml-64 bg-slate-50 dark:bg-slate-950 min-h-screen pt-20">
-  <div class="px-4 py-4 rounded-lg">
-    <router-outlet></router-outlet>
+  <div class="flex-1 flex flex-col min-w-0">
+    <!-- Header -->
+    <app-navbar></app-navbar>
+
+    <!-- Content Area -->
+    <main class="flex-1 p-6 overflow-initial">
+      <div class="p-6 bg-white rounded-ant min-h-[calc(100vh-160px)] shadow-sm">
+        <router-outlet></router-outlet>
+      </div>
+
+      <!-- Footer -->
+      <footer class="py-6 text-center text-gray-500 text-sm">
+        Ant Design ©{{ currentYear }} Created by Ant UED
+      </footer>
+    </main>
   </div>
-</main>
+</div>

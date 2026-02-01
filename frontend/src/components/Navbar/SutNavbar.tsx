@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
-import { Bell, ChevronDown, Search, Globe, User, Menu, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { Bell, ChevronDown, Search, Globe, User, Menu, X, LogOut } from 'lucide-react';
+import { authService } from '../../services/authService';
 
 const SutNavbar: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    // Mock login state for now
-    const isLoggedIn = false;
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Check login status on mount
+        const token = authService.getToken();
+        setIsLoggedIn(!!token);
+    }, []);
+
+    const handleLogout = () => {
+        authService.logout();
+        setIsLoggedIn(false);
+        setIsUserMenuOpen(false);
+        navigate('/login');
+    };
 
     const navLinks = [
         { to: '/', label: 'หน้าแรก' },
@@ -77,17 +92,41 @@ const SutNavbar: React.FC = () => {
                         <div className="hidden sm:block w-[1px] h-4 bg-gray-200"></div>
 
                         {isLoggedIn ? (
-                            <div className="flex items-center space-x-2 md:space-x-4">
+                            <div className="flex items-center space-x-2 md:space-x-4 relative">
                                 <button className="relative text-gray-500 hover:text-black transition-colors">
                                     <Bell size={20} strokeWidth={2} />
                                     <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                                 </button>
-                                <div className="flex items-center space-x-2 cursor-pointer group">
+                                <div
+                                    className="flex items-center space-x-2 cursor-pointer group"
+                                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                >
                                     <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
                                         <User size={18} className="text-gray-700" />
                                     </div>
-                                    <ChevronDown size={14} className="text-gray-400 group-hover:text-black transition-colors" />
+                                    <ChevronDown size={14} className={`text-gray-400 group-hover:text-black transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                                 </div>
+
+                                {/* User Dropdown */}
+                                {isUserMenuOpen && (
+                                    <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <Link
+                                            to="/profile"
+                                            className="flex items-center px-4 py-2.5 text-[13px] font-bold text-gray-600 hover:bg-gray-50 hover:text-black transition-colors"
+                                            onClick={() => setIsUserMenuOpen(false)}
+                                        >
+                                            <User size={16} className="mr-3" />
+                                            โปรไฟล์
+                                        </Link>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full flex items-center px-4 py-2.5 text-[13px] font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-colors border-t border-gray-50 mt-1"
+                                        >
+                                            <LogOut size={16} className="mr-3" />
+                                            ออกจากระบบ
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="flex items-center space-x-2 md:space-x-4">

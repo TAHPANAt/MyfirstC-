@@ -34,10 +34,9 @@ namespace MyFirstApi.Controllers
                 return BadRequest("User with this email already exists.");
             }
 
-            // Assign a default role (e.g., 1 for User, assuming Role 1 exists)
-            // If Roles table is empty, you might need to handle that.
-            var defaultRole = await _context.Roles.FirstOrDefaultAsync();
-            int roleId = defaultRole?.Id ?? 1; 
+            // Assign the "User" role by default
+            var userRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "User");
+            int roleId = userRole?.Id ?? 2; // Fallback to 2 if not found, assuming 2 is User based on seeding
 
             var user = new User
             {
@@ -45,7 +44,7 @@ namespace MyFirstApi.Controllers
                 Lastname = model.Lastname,
                 Gmail = model.Gmail,
                 Phone = model.Phone,
-                Password = model.Password, // In production, hash this!
+                Password = BCrypt.Net.BCrypt.HashPassword(model.Password),
                 RoleId = roleId
             };
 
@@ -60,9 +59,12 @@ namespace MyFirstApi.Controllers
         {
             var user = await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Gmail == model.Gmail && u.Password == model.Password);
+                .FirstOrDefaultAsync(u => u.Gmail == model.Gmail);
 
-            if (user == null) return Unauthorized("Invalid email or password");
+            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
+            {
+                return Unauthorized("Invalid email or password");
+            }
 
             return Ok(new { token = GenerateJwtToken(user), user = new { name = user.Firstname, role = user.Role?.Name } });
         }

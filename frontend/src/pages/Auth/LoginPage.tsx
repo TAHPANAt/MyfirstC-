@@ -14,8 +14,12 @@ const LoginPage: React.FC = () => {
         setError('');
         setLoading(true);
         try {
-            await authService.login({ gmail, password });
-            navigate('/');
+            const response = await authService.login({ gmail, password });
+            if (response.user?.role?.toLowerCase() === 'admin') {
+                window.location.href = 'http://localhost:4200';
+            } else {
+                navigate('/');
+            }
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
         } finally {
@@ -24,19 +28,19 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full"></div>
                 <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-emerald-600/20 blur-[120px] rounded-full"></div>
             </div>
 
             <div className="w-full max-w-md z-10">
-                <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 p-8 rounded-3xl shadow-2xl">
+                <div className="bg-white/80 backdrop-blur-xl border border-slate-200 p-8 rounded-3xl shadow-xl">
                     <div className="text-center mb-10">
-                        <h1 className="text-4xl font-black bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent mb-2">
+                        <h1 className="text-4xl font-black bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent mb-2">
                             Welcome Back
                         </h1>
-                        <p className="text-slate-400">Sign in to manage your inventory</p>
+                        <p className="text-slate-500">Sign in to manage your inventory</p>
                     </div>
 
                     {error && (
@@ -47,11 +51,11 @@ const LoginPage: React.FC = () => {
 
                     <form onSubmit={handleLogin} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-slate-400 mb-2">Gmail Address</label>
+                            <label className="block text-sm font-medium text-slate-600 mb-2">Gmail Address</label>
                             <input
                                 type="email"
                                 required
-                                className="w-full px-5 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-400"
                                 placeholder="example@gmail.com"
                                 value={gmail}
                                 onChange={(e) => setGmail(e.target.value)}
@@ -59,11 +63,11 @@ const LoginPage: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-slate-400 mb-2">Password</label>
+                            <label className="block text-sm font-medium text-slate-600 mb-2">Password</label>
                             <input
                                 type="password"
                                 required
-                                className="w-full px-5 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-400"
                                 placeholder="••••••••"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -81,7 +85,7 @@ const LoginPage: React.FC = () => {
 
                     <p className="mt-8 text-center text-slate-500">
                         Don't have an account?{' '}
-                        <Link to="/register" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                        <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
                             Create an account
                         </Link>
                     </p>

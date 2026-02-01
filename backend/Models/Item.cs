@@ -15,8 +15,13 @@ namespace MyFirstApi.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
+        public int Stock { get; set; } = 0;
+
         // Foreign Key
         public int CategoryId { get; set; }
         public Category? Category { get; set; }
+
+        // Relationship: One Item has many Images
+        public ICollection<ItemImage> Images { get; set; } = new List<ItemImage>();
     }
 }

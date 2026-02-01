@@ -33,19 +33,19 @@ const RegisterPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 py-12">
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[20%] right-[10%] w-[35%] h-[35%] bg-purple-600/10 blur-[120px] rounded-full"></div>
                 <div className="absolute bottom-[20%] left-[10%] w-[35%] h-[35%] bg-blue-600/10 blur-[120px] rounded-full"></div>
             </div>
 
             <div className="w-full max-w-2xl z-10">
-                <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 p-8 rounded-3xl shadow-2xl">
+                <div className="bg-white/80 backdrop-blur-xl border border-slate-200 p-8 rounded-3xl shadow-xl">
                     <div className="text-center mb-10">
-                        <h1 className="text-4xl font-black bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                        <h1 className="text-4xl font-black bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
                             Create Account
                         </h1>
-                        <p className="text-slate-400">Join us to start managing your system efficiently</p>
+                        <p className="text-slate-500">Join us to start managing your system efficiently</p>
                     </div>
 
                     {error && (
@@ -57,23 +57,23 @@ const RegisterPage: React.FC = () => {
                     <form onSubmit={handleRegister} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-slate-400 mb-2">First Name</label>
+                                <label className="block text-sm font-medium text-slate-600 mb-2">First Name</label>
                                 <input
                                     type="text"
                                     name="firstname"
                                     required
-                                    className="w-full px-5 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all placeholder:text-slate-400"
                                     placeholder="John"
                                     onChange={handleChange}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-400 mb-2">Last Name</label>
+                                <label className="block text-sm font-medium text-slate-600 mb-2">Last Name</label>
                                 <input
                                     type="text"
                                     name="lastname"
                                     required
-                                    className="w-full px-5 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all placeholder:text-slate-400"
                                     placeholder="Doe"
                                     onChange={handleChange}
                                 />
@@ -81,36 +81,36 @@ const RegisterPage: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-slate-400 mb-2">Gmail Address</label>
+                            <label className="block text-sm font-medium text-slate-600 mb-2">Gmail Address</label>
                             <input
                                 type="email"
                                 name="gmail"
                                 required
-                                className="w-full px-5 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all placeholder:text-slate-400"
                                 placeholder="example@gmail.com"
                                 onChange={handleChange}
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-slate-400 mb-2">Phone Number</label>
+                            <label className="block text-sm font-medium text-slate-600 mb-2">Phone Number</label>
                             <input
                                 type="tel"
                                 name="phone"
                                 required
-                                className="w-full px-5 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all placeholder:text-slate-400"
                                 placeholder="081-234-5678"
                                 onChange={handleChange}
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-slate-400 mb-2">Password</label>
+                            <label className="block text-sm font-medium text-slate-600 mb-2">Password</label>
                             <input
                                 type="password"
                                 name="password"
                                 required
-                                className="w-full px-5 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all placeholder:text-slate-400"
                                 placeholder="••••••••"
                                 onChange={handleChange}
                             />
@@ -127,7 +127,7 @@ const RegisterPage: React.FC = () => {
 
                     <p className="mt-8 text-center text-slate-500">
                         Already have an account?{' '}
-                        <Link to="/login" className="text-purple-400 hover:text-purple-300 font-medium transition-colors">
+                        <Link to="/login" className="text-purple-600 hover:text-purple-700 font-medium transition-colors">
                             Sign In
                         </Link>
                     </p>

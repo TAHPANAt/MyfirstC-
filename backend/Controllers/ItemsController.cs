@@ -19,13 +19,19 @@ namespace MyFirstApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Item>>> GetItems()
         {
-            return await _context.Items.Include(i => i.Category).ToListAsync();
+            return await _context.Items
+                .Include(i => i.Category)
+                .Include(i => i.Images)
+                .ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Item>> GetItem(int id)
         {
-            var item = await _context.Items.Include(i => i.Category).FirstOrDefaultAsync(i => i.Id == id);
+            var item = await _context.Items
+                .Include(i => i.Category)
+                .Include(i => i.Images)
+                .FirstOrDefaultAsync(i => i.Id == id);
 
             if (item == null)
             {

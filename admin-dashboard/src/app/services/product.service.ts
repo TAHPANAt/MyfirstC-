@@ -13,8 +13,10 @@ export interface Product {
     itemname: string;
     description: string;
     price: number;
+    stock: number;
     categoryId: number;
     category?: Category;
+    images?: { id?: number; imageUrl: string }[];
 }
 
 @Injectable({
@@ -34,7 +36,22 @@ export class ProductService {
     }
 
     getCategories(): Observable<Category[]> {
-        // If CategoriesController doesn't exist, we might need to add it or handle it
         return this.http.get<Category[]>(this.categoryUrl);
+    }
+
+    uploadImages(files: FileList): Observable<{ urls: string[] }> {
+        const formData = new FormData();
+        Array.from(files).forEach(file => {
+            formData.append('files', file);
+        });
+        return this.http.post<{ urls: string[] }>('http://localhost:5178/api/files/upload', formData);
+    }
+
+    uploadFileList(files: File[]): Observable<{ urls: string[] }> {
+        const formData = new FormData();
+        files.forEach(file => {
+            formData.append('files', file);
+        });
+        return this.http.post<{ urls: string[] }>('http://localhost:5178/api/files/upload', formData);
     }
 }
