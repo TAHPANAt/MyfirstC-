@@ -1,29 +1,51 @@
 import React, { useEffect, useState } from 'react';
+import {
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+    AppstoreOutlined,
+    FilterOutlined,
+    SortAscendingOutlined,
+} from '@ant-design/icons';
+import { Button, Layout, Menu, theme, Input, Select, Spin, Empty } from 'antd';
 import type { Item } from '../../interfaces/Item';
+import type { Category } from '../../interfaces/Category';
 import { itemService } from '../../services/itemService';
+import { categoryService } from '../../services/categoryService';
 import ItemCard from '../../components/Item/ItemCard';
-import { Search, Filter, Layers, Package } from 'lucide-react';
+
+const { Header, Sider, Content } = Layout;
+const { Search } = Input;
 
 const ItemsPage: React.FC = () => {
+    const [collapsed, setCollapsed] = useState(false);
     const [items, setItems] = useState<Item[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('ทุกหมวดหมู่');
     const [conditionFilter, setConditionFilter] = useState('ทุกสภาพ');
     const [sortBy, setSortBy] = useState<'latest' | 'oldest'>('latest');
 
+    const {
+        token: { colorBgContainer, borderRadiusLG },
+    } = theme.useToken();
+
     useEffect(() => {
-        const fetchItems = async () => {
+        const fetchData = async () => {
             try {
-                const data = await itemService.getAll();
-                setItems(data);
+                const [itemsData, categoriesData] = await Promise.all([
+                    itemService.getAll(),
+                    categoryService.getAll(),
+                ]);
+                setItems(itemsData);
+                setCategories(categoriesData);
             } catch (error) {
-                console.error('Failed to fetch items', error);
+                console.error('Failed to fetch items or categories', error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchItems();
+        fetchData();
     }, []);
 
     // Filter and Sort Items
@@ -42,90 +64,161 @@ const ItemsPage: React.FC = () => {
             }
         });
 
+    // Build menu items for categories
+    const categoryMenuItems = [
+        {
+            key: 'ทุกหมวดหมู่',
+            icon: <AppstoreOutlined />,
+            label: 'ทุกหมวดหมู่',
+        },
+        ...categories.map(cat => ({
+            key: cat.name,
+            icon: <AppstoreOutlined />,
+            label: cat.name,
+        })),
+    ];
+
     return (
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-            {/* Search & Filter Bar */}
-            <div className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 mb-8">
-                <div className="flex-1 relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input
+        <Layout style={{ minHeight: '100vh' }}>
+            <Sider
+                trigger={null}
+                collapsible
+                collapsed={collapsed}
+                style={{
+                    background: '#001529',
+                }}
+            >
+                <div style={{
+                    height: 64,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontSize: collapsed ? '14px' : '18px',
+                    fontWeight: 'bold',
+                    borderBottom: '1px solid rgba(255,255,255,0.1)'
+                }}>
+                    {collapsed ? '📦' : '📦 หมวดหมู่'}
+                </div>
+                <Menu
+                    theme="dark"
+                    mode="inline"
+                    selectedKeys={[categoryFilter]}
+                    onClick={(e: { key: string }) => setCategoryFilter(e.key)}
+                    items={categoryMenuItems}
+                />
+            </Sider>
+            <Layout>
+                <Header style={{
+                    padding: '0 24px',
+                    background: colorBgContainer,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+                }}>
+                    <Button
                         type="text"
+                        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                        onClick={() => setCollapsed(!collapsed)}
+                        style={{
+                            fontSize: '16px',
+                            width: 48,
+                            height: 48,
+                        }}
+                    />
+                    <Search
                         placeholder="ค้นหาชื่อสิ่งของ..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                        style={{ maxWidth: 400, flex: 1 }}
+                        size="large"
+                        allowClear
                     />
-                </div>
-                <div className="flex items-center gap-3">
-                    <div className="relative">
-                        <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                        <select 
-                            value={categoryFilter}
-                            onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="pl-10 pr-10 py-3 bg-gray-50 border-none rounded-2xl text-sm appearance-none focus:ring-2 focus:ring-emerald-500/20"
-                        >
-                            <option>ทุกหมวดหมู่</option>
-                            <option>เสื้อผ้า</option>
-                            <option>เครื่องใช้ไฟฟ้า</option>
-                            <option>เฟอร์นิเจอร์</option>
-                            <option>หนังสือ</option>
-                            <option>อื่น ๆ</option>
-                        </select>
+                    <Select
+                        value={conditionFilter}
+                        onChange={(value: string) => setConditionFilter(value)}
+                        style={{ width: 180 }}
+                        size="large"
+                        prefix={<FilterOutlined />}
+                        options={[
+                            { value: 'ทุกสภาพ', label: 'ทุกสภาพ' },
+                            { value: 'มือหนึ่ง', label: 'มือหนึ่ง' },
+                            { value: 'มือสอง (สภาพดี)', label: 'มือสอง (สภาพดี)' },
+                            { value: 'มือสอง (ปานกลาง)', label: 'มือสอง (ปานกลาง)' },
+                            { value: 'ของสะสม', label: 'ของสะสม' },
+                        ]}
+                    />
+                    <Select
+                        value={sortBy}
+                        onChange={(value: 'latest' | 'oldest') => setSortBy(value)}
+                        style={{ width: 140 }}
+                        size="large"
+                        prefix={<SortAscendingOutlined />}
+                        options={[
+                            { value: 'latest', label: 'ล่าสุด' },
+                            { value: 'oldest', label: 'เก่าสุด' },
+                        ]}
+                    />
+                </Header>
+                <Content
+                    style={{
+                        margin: '24px 16px',
+                        padding: 24,
+                        minHeight: 280,
+                        background: colorBgContainer,
+                        borderRadius: borderRadiusLG,
+                    }}
+                >
+                    {/* Results Header */}
+                    <div style={{
+                        marginBottom: 24,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                    }}>
+                        <h2 style={{
+                            margin: 0,
+                            fontSize: '20px',
+                            fontWeight: 'bold',
+                            color: '#1f2937'
+                        }}>
+                            ผลลัพธ์: {filteredItems.length} รายการ
+                        </h2>
+                        <span style={{ color: '#10b981', fontWeight: 600 }}>
+                            หมวดหมู่: {categoryFilter}
+                        </span>
                     </div>
-                    <div className="relative">
-                        <Layers className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                        <select 
-                            value={conditionFilter}
-                            onChange={(e) => setConditionFilter(e.target.value)}
-                            className="pl-10 pr-10 py-3 bg-gray-50 border-none rounded-2xl text-sm appearance-none focus:ring-2 focus:ring-emerald-500/20"
-                        >
-                            <option>ทุกสภาพ</option>
-                            <option>มือหนึ่ง</option>
-                            <option>มือสอง (สภาพดี)</option>
-                            <option>มือสอง (ปานกลาง)</option>
-                            <option>ของสะสม</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
 
-            <div className="flex items-center justify-between mb-6 px-2">
-                <h2 className="text-xl font-bold text-gray-800">ผลลัพธ์: {filteredItems.length} รายการ</h2>
-                <div className="flex items-center space-x-2 text-sm font-bold text-emerald-600">
-                    <label htmlFor="sortBy" className="whitespace-nowrap">เรียงตาม:</label>
-                    <select 
-                        id="sortBy"
-                        value={sortBy} 
-                        onChange={(e) => setSortBy(e.target.value as 'latest' | 'oldest')}
-                        className="bg-transparent border-none focus:ring-0 text-emerald-600 font-bold cursor-pointer"
-                    >
-                        <option value="latest">ล่าสุด</option>
-                        <option value="oldest">เก่าสุด</option>
-                    </select>
-                </div>
-            </div>
-
-            {/* Grid */}
-            {loading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {[1, 2, 3, 4].map(n => (
-                        <div key={n} className="h-96 bg-gray-100 animate-pulse rounded-3xl"></div>
-                    ))}
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                    {filteredItems.map((item) => (
-                        <ItemCard key={item.id} item={item} />
-                    ))}
-                    {filteredItems.length === 0 && (
-                        <div className="col-span-full py-20 text-center">
-                            <Package className="mx-auto text-gray-200 mb-4" size={64} />
-                            <p className="text-gray-400 font-bold">ไม่พบรายการสิ่งของในขณะนี้</p>
+                    {/* Items Grid */}
+                    {loading ? (
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            minHeight: 400
+                        }}>
+                            <Spin size="large" tip="กำลังโหลด..." />
+                        </div>
+                    ) : filteredItems.length === 0 ? (
+                        <Empty
+                            description="ไม่พบรายการสิ่งของในขณะนี้"
+                            style={{ marginTop: 80 }}
+                        />
+                    ) : (
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                            gap: '24px',
+                        }}>
+                            {filteredItems.map((item) => (
+                                <ItemCard key={item.id} item={item} />
+                            ))}
                         </div>
                     )}
-                </div>
-            )}
-        </div>
+                </Content>
+            </Layout>
+        </Layout>
     );
 };
 

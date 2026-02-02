@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.1.0",
     "@types/nprogress": "^0.2.3",
+    "antd": "^6.2.3",
     "axios": "^1.13.4",
     "lucide-react": "^0.563.0",
     "nprogress": "^0.2.0",

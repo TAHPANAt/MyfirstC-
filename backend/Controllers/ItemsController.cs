@@ -22,6 +22,7 @@ namespace MyFirstApi.Controllers
             return await _context.Items
                 .Include(i => i.Category)
                 .Include(i => i.Images)
+                .OrderByDescending(i => i.CreatedAt)
                 .ToListAsync();
         }
 

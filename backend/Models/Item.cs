@@ -23,5 +23,11 @@ namespace MyFirstApi.Models
 
         // Relationship: One Item has many Images
         public ICollection<ItemImage> Images { get; set; } = new List<ItemImage>();
+
+        // When the item was created
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Condition of the item (e.g., New, Used, Refurbished)
+        public string Condition { get; set; } = "Unknown";
     }
 }
