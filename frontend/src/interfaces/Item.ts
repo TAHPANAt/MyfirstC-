@@ -7,4 +7,6 @@ export interface Item {
     price: number;
     categoryId: number;
     category?: Category;
+    createdAt?: string;
+    condition?: string;
 }

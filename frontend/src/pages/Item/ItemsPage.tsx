@@ -7,6 +7,10 @@ import { Search, Filter, Layers, Package } from 'lucide-react';
 const ItemsPage: React.FC = () => {
     const [items, setItems] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('ทุกหมวดหมู่');
+    const [conditionFilter, setConditionFilter] = useState('ทุกสภาพ');
+    const [sortBy, setSortBy] = useState<'latest' | 'oldest'>('latest');
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -22,6 +26,22 @@ const ItemsPage: React.FC = () => {
         fetchItems();
     }, []);
 
+    // Filter and Sort Items
+    const filteredItems = items
+        .filter(item => {
+            const matchesSearch = item.itemname.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesCategory = categoryFilter === 'ทุกหมวดหมู่' || item.category?.name === categoryFilter;
+            const matchesCondition = conditionFilter === 'ทุกสภาพ' || item.condition === conditionFilter;
+            return matchesSearch && matchesCategory && matchesCondition;
+        })
+        .sort((a, b) => {
+            if (sortBy === 'latest') {
+                return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+            } else {
+                return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+            }
+        });
+
     return (
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
             {/* Search & Filter Bar */}
@@ -31,29 +51,57 @@ const ItemsPage: React.FC = () => {
                     <input
                         type="text"
                         placeholder="ค้นหาชื่อสิ่งของ..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-12 pr-4 py-3 bg-gray-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500/20 transition-all"
                     />
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="relative">
                         <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                        <select className="pl-10 pr-10 py-3 bg-gray-50 border-none rounded-2xl text-sm appearance-none focus:ring-2 focus:ring-emerald-500/20">
+                        <select 
+                            value={categoryFilter}
+                            onChange={(e) => setCategoryFilter(e.target.value)}
+                            className="pl-10 pr-10 py-3 bg-gray-50 border-none rounded-2xl text-sm appearance-none focus:ring-2 focus:ring-emerald-500/20"
+                        >
                             <option>ทุกหมวดหมู่</option>
+                            <option>เสื้อผ้า</option>
+                            <option>เครื่องใช้ไฟฟ้า</option>
+                            <option>เฟอร์นิเจอร์</option>
+                            <option>หนังสือ</option>
+                            <option>อื่น ๆ</option>
                         </select>
                     </div>
                     <div className="relative">
                         <Layers className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                        <select className="pl-10 pr-10 py-3 bg-gray-50 border-none rounded-2xl text-sm appearance-none focus:ring-2 focus:ring-emerald-500/20">
+                        <select 
+                            value={conditionFilter}
+                            onChange={(e) => setConditionFilter(e.target.value)}
+                            className="pl-10 pr-10 py-3 bg-gray-50 border-none rounded-2xl text-sm appearance-none focus:ring-2 focus:ring-emerald-500/20"
+                        >
                             <option>ทุกสภาพ</option>
+                            <option>มือหนึ่ง</option>
+                            <option>มือสอง (สภาพดี)</option>
+                            <option>มือสอง (ปานกลาง)</option>
+                            <option>ของสะสม</option>
                         </select>
                     </div>
                 </div>
             </div>
 
             <div className="flex items-center justify-between mb-6 px-2">
-                <h2 className="text-xl font-bold text-gray-800">ผลลัพธ์: {items.length} รายการ</h2>
+                <h2 className="text-xl font-bold text-gray-800">ผลลัพธ์: {filteredItems.length} รายการ</h2>
                 <div className="flex items-center space-x-2 text-sm font-bold text-emerald-600">
-                    <span>เรียงตาม: ล่าสุด</span>
+                    <label htmlFor="sortBy" className="whitespace-nowrap">เรียงตาม:</label>
+                    <select 
+                        id="sortBy"
+                        value={sortBy} 
+                        onChange={(e) => setSortBy(e.target.value as 'latest' | 'oldest')}
+                        className="bg-transparent border-none focus:ring-0 text-emerald-600 font-bold cursor-pointer"
+                    >
+                        <option value="latest">ล่าสุด</option>
+                        <option value="oldest">เก่าสุด</option>
+                    </select>
                 </div>
             </div>
 
@@ -66,10 +114,10 @@ const ItemsPage: React.FC = () => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                    {items.map((item) => (
+                    {filteredItems.map((item) => (
                         <ItemCard key={item.id} item={item} />
                     ))}
-                    {items.length === 0 && (
+                    {filteredItems.length === 0 && (
                         <div className="col-span-full py-20 text-center">
                             <Package className="mx-auto text-gray-200 mb-4" size={64} />
                             <p className="text-gray-400 font-bold">ไม่พบรายการสิ่งของในขณะนี้</p>
